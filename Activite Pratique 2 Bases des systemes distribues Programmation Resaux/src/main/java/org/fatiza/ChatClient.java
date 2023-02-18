@@ -1,37 +1,30 @@
 package org.fatiza;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 public class ChatClient {
     public static void main(String[] args) throws IOException {
-        String serverAddress = "localhost"; // Adresse du serveur
-        int port = 2001; // Port du serveur
-        Socket socket = new Socket(serverAddress, port); // Création de la socket
-
-        BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream())); // Flux de lecture
-        PrintWriter output = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true); // Flux d'écriture
-
-        BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in)); // Flux de lecture de la console
-
-        System.out.println("Connected to server");
-
+        String serverAddress = "localhost";
+        int port = 2001;
+        Socket socket = new Socket(serverAddress, port);
+        InputStream is=socket.getInputStream();
+        InputStreamReader isr=new InputStreamReader(is);
+        BufferedReader input = new BufferedReader(isr);
+        OutputStream os=socket.getOutputStream();
+        OutputStreamWriter osr=new OutputStreamWriter(os);
+        PrintWriter output = new PrintWriter(osr, true);
+        BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Connected!");
         while (true) {
-            String message = consoleInput.readLine(); // Lecture du message depuis la console
-            output.println(message); // Envoi du message au serveur
-
+            String message = consoleInput.readLine();
+            output.println(message);
             if (message.equals("exit")) {
-                break; // Si l'utilisateur a saisi "exit", on sort de la boucle
+                break;
             }
-
-            String response = input.readLine(); // Lecture de la réponse du serveur
-            System.out.println(response); // Affichage de la réponse du serveur
+            String response = input.readLine();
+            System.out.println(response);
         }
-
-        socket.close(); // Fermeture de la socket
+        socket.close();
     }
 }

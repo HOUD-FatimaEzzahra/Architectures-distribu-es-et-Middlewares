@@ -10,17 +10,14 @@ import java.util.stream.Collectors;
 public class MultiThreadBlockingChatServer extends Thread {
     private List<Conversation> conversations =new ArrayList<>();
     int clientsCount = 0;
-
     public static void main(String[] args) {
         new MultiThreadBlockingChatServer().start();
     }
-
     @Override
     public void run() {
-        try
-        {
+        System.out.println("The server is started using port 2001");
+        try {
             ServerSocket serverSocket =new ServerSocket(2001);
-
             while
             (true){
                 Socket socket = serverSocket.accept();
@@ -34,16 +31,13 @@ public class MultiThreadBlockingChatServer extends Thread {
             throw new RuntimeException(e);
         }
     }
-
     class Conversation extends Thread {
         private int clientId;
         private Socket socket;
-
         public Conversation(Socket socket, int clientId) {
             this.socket = socket;
             this.clientId = clientId;
         }
-
         @Override
         public void run() {
             try {
@@ -52,8 +46,8 @@ public class MultiThreadBlockingChatServer extends Thread {
                 BufferedReader br = new BufferedReader(isr);
                 OutputStream os = socket.getOutputStream();
                 PrintWriter pw = new PrintWriter(os, true);
-                System.out.println("New connection from Number" + clientId + " IP= " + socket.getRemoteSocketAddress());
-                pw.println("Welcome you are the client number :" + clientId);
+                System.out.println("New connection from Client n°" + clientId + " IP= " + socket.getRemoteSocketAddress());
+                pw.println("\t Welcome you are the client n°:" + clientId);
                 String request;
                 String message = "";
                 List<Integer> ids = new ArrayList<>();
@@ -75,14 +69,13 @@ public class MultiThreadBlockingChatServer extends Thread {
                         message = request;
                         ids = conversations.stream().map(c -> c.clientId).collect(Collectors.toList());
                     }
-                    System.out.println("New Request => " + request + " from " + socket.getRemoteSocketAddress());
+                    System.out.println("\t New Request => " + request + " from " + socket.getRemoteSocketAddress());
                     broadcastMessage(message, socket, ids);
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
-
         public void broadcastMessage(String message, Socket from, List<Integer> clientIds) {
             try {
                 for (Conversation conversation : conversations) {

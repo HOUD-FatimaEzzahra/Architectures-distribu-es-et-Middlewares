@@ -19,7 +19,6 @@ public class ClientController {
     @FXML private TextArea chatArea;
 
     private Client client;
-
     @FXML
     public void initialize() {
         client = new Client();
@@ -27,13 +26,11 @@ public class ClientController {
         connectButton.setOnAction(event -> connect());
         disconnectButton.setOnAction(event -> disconnect());
     }
-
     private void sendMessage() {
         String message = messageField.getText();
         client.send(message);
         messageField.clear();
     }
-
     private void connect() {
         try {
             client.connect("localhost", 2001); // replace with your server's host and port
@@ -43,7 +40,6 @@ public class ClientController {
             e.printStackTrace();
         }
     }
-
     private void disconnect() {
         try {
             client.disconnect();
