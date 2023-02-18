@@ -8,44 +8,41 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MultiThreadBlockingChatServer extends Thread {
-    private List<Conversation> conversations =new ArrayList<>();
+    private List<Conversation> conversations = new ArrayList<>();
     int clientsCount = 0;
+
     public static void main(String[] args) {
         new MultiThreadBlockingChatServer().start();
     }
-    @Override
-    public void run() {
+
+    public void start() {
         System.out.println("The server is started using port 2001");
-        try {
-            ServerSocket serverSocket =new ServerSocket(2001);
-            while
-            (true){
+        try (ServerSocket serverSocket = new ServerSocket(2001)) {
+            while (true) {
                 Socket socket = serverSocket.accept();
                 ++clientsCount;
                 Conversation conversation = new Conversation(socket, clientsCount);
                 conversations.add(conversation);
                 conversation.start();
             }
-        } catch
-        (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
     class Conversation extends Thread {
         private int clientId;
         private Socket socket;
+
         public Conversation(Socket socket, int clientId) {
             this.socket = socket;
             this.clientId = clientId;
         }
+
         @Override
         public void run() {
-            try {
-                InputStream is = socket.getInputStream();
-                InputStreamReader isr = new InputStreamReader(is);
-                BufferedReader br = new BufferedReader(isr);
-                OutputStream os = socket.getOutputStream();
-                PrintWriter pw = new PrintWriter(os, true);
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                 PrintWriter pw = new PrintWriter(socket.getOutputStream(), true)) {
                 System.out.println("New connection from Client n°" + clientId + " IP= " + socket.getRemoteSocketAddress());
                 pw.println("\t Welcome you are the client n°:" + clientId);
                 String request;
@@ -58,10 +55,7 @@ public class MultiThreadBlockingChatServer extends Thread {
                         String clients = items[0];
                         message = items[1];
                         if (clients.contains(",")) {
-                            String[] idsListStr = clients.split(",");
-                            for (String id : idsListStr) {
-                                ids.add(Integer.parseInt(id));
-                            }
+                            ids = List.of(clients.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
                         } else {
                             ids.add(Integer.parseInt(clients));
                         }
@@ -72,22 +66,21 @@ public class MultiThreadBlockingChatServer extends Thread {
                     System.out.println("\t New Request => " + request + " from " + socket.getRemoteSocketAddress());
                     broadcastMessage(message, socket, ids);
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
+
         public void broadcastMessage(String message, Socket from, List<Integer> clientIds) {
-            try {
-                for (Conversation conversation : conversations) {
-                    Socket socket = conversation.socket;
-                    if ((socket != from) && clientIds.contains(conversation.clientId)) {
-                        OutputStream os = socket.getOutputStream();
-                        PrintWriter printWriter = new PrintWriter(os, true);
+            for (Conversation conversation : conversations) {
+                Socket socket = conversation.socket;
+                if ((socket != from) && clientIds.contains(conversation.clientId)) {
+                    try (PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true)) {
                         printWriter.println(message);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
         }
     }
