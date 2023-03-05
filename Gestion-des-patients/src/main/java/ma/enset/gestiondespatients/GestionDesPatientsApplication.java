@@ -19,7 +19,7 @@ public class GestionDesPatientsApplication {
     @Bean
     CommandLineRunner commandLineRunner(PatientRepository patientRepository){
         return args -> {
-            patientRepository.save(
+            /*patientRepository.save(
                     new Patient(0,"HOUD","Fatiza",new Date(),false,10)
             );
             patientRepository.save(
@@ -30,7 +30,7 @@ public class GestionDesPatientsApplication {
             );
             patientRepository.save(
                     new Patient(3,"HOUD","Hind",new Date(),false,18)
-            );
+            );*/
             patientRepository.findAll().forEach(p->{
                 System.out.println(p.getNom()+" "+p.getPrenom());
             });

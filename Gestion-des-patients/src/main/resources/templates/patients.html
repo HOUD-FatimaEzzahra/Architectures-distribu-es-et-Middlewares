@@ -12,6 +12,11 @@
             Liste des patients
         </div>
         <div class="card-body">
+            <form method="get" th:action="@{index}">
+                <label> Mot clé </label>
+                <input type="text" name="motCle" th:value="${motCle}">
+                <button type="submit" class="btn btn-secondary">Checher</button>
+            </form>
             <table class="table">
             <thead>
             <th>ID</th>
@@ -37,6 +42,13 @@
             <tr></tr>
             </tbody>
         </table>
+            <ul class="nav nav-pills">
+                <li th:each="page,status:${pages}">
+                    <a th:class="${status.index==currentPage?'btn btn-dark ms-2':'btn btn-outline-dark ms-2'}"
+                       th:text="${status.index}"
+                       th:href="@{index(page=${status.index})}"></a>
+                </li>
+            </ul>
         </div>
     </div>
 </div>
