@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -29,7 +30,20 @@ public class PatientController {
         model.addAttribute("motCle",motCle);
         return "patients";
     }
+    @GetMapping("/delete")
+    public String delete(Long id, String motCle, int page){
+        patientRepository.deleteById(id);
+        return "redirect:/index?page="+page+"&motCle="+motCle;
+    }
 
-
-
+    @GetMapping("/patients")
+    @ResponseBody
+    public List<Patient> listPatients(){
+        return patientRepository.findAll();
+    }
+    @GetMapping("/formulairePatient")
+    public String formulairePatient(Model model){
+        model.addAttribute("patient",new Patient());
+        return "formulairePatient";
+    }
 }
