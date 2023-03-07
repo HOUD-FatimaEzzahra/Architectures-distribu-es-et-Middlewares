@@ -1,5 +1,6 @@
 package ma.enset.gestiondespatients.web;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import ma.enset.gestiondespatients.entities.Patient;
 import ma.enset.gestiondespatients.repositories.PatientRepository;
@@ -8,7 +9,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -46,4 +49,26 @@ public class PatientController {
         model.addAttribute("patient",new Patient());
         return "formulairePatient";
     }
+
+    @PostMapping(path = "/save")
+    public String save(Model model, @Valid Patient patient, BindingResult bindingResult){
+        if (bindingResult.hasErrors())
+            return "formulairePatient";
+        patientRepository.save(patient);
+        return "redirect:/index";
+
+    }
+    @GetMapping(path = "/editPatient")
+    public String editPatient(Model model, Long id, String motCle, int page){
+        Patient patient=patientRepository.findById(id).orElse(null);
+        if(patient==null)
+            throw  new RuntimeException("Patient introuvable");
+        model.addAttribute("patient",patient);
+        model.addAttribute("page",page);
+        model.addAttribute("motCle",motCle);
+        return "editPatient";
+
+    }
+
+
 }

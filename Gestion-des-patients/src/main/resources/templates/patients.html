@@ -41,7 +41,7 @@
                 <td th:text="${patient.score}"></td>
                 <td align="right">
                     <a onclick="return confirm('Etês vous sur ?')" class="btn btn-outline-danger btn-sm" th:href="@{delete(id=${patient.id}, motCle=${motCle}, page=${currentPage})}">Supprimer</a>
-                    <a onclick="return confirm('Etês vous sur ?')" class="btn btn-outline-success btn-sm" th:href="@{delete(id=${patient.id}, motCle=${motCle}, page=${currentPage})}">Modifier</a>
+                    <a class="btn btn-outline-success btn-sm" th:href="@{editPatient(id=${patient.id} motCle=${motCle}, page=${currentPage}) }">Modifier</a>
                 </td>
             </tr>
             </tbody>
