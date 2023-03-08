@@ -51,11 +51,11 @@ public class PatientController {
     }
 
     @PostMapping(path = "/save")
-    public String save(Model model, @Valid Patient patient, BindingResult bindingResult){
+    public String save(Model model, @Valid Patient patient, BindingResult bindingResult, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = " ") String motCle){
         if (bindingResult.hasErrors())
             return "formulairePatient";
         patientRepository.save(patient);
-        return "redirect:/index";
+        return "redirect:/index?page"+page+"&motCle="+motCle  ;
 
     }
     @GetMapping(path = "/editPatient")
