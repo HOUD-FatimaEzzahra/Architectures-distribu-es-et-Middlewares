@@ -3,16 +3,16 @@ package ma.enset;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-@WebService
+@WebService(serviceName = "BanqueWS")
 public class BanqueService {
-    @WebMethod
-    public double conversion(@WebParam double mt){
+    @WebMethod(operationName = "Conversion")
+    public double conversion(@WebParam(name = "montant")double mt){
         return mt*11.3;
     }
+    @WebMethod 
     public Compte getCompte(int code){
         return  new Compte(code, Math.random()*6500, new Date());
     }
