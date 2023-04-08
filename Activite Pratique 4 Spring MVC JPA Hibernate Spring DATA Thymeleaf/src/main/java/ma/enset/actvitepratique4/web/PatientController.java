@@ -1,10 +1,9 @@
 package ma.enset.actvitepratique4.web;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-
-import ma.enset.actvitepratique4.entities.Patient;
-import ma.enset.actvitepratique4.repositories.PatientRepository;
+import ma.enset.hospitalapp.entities.Patient;
+import ma.enset.hospitalapp.repository.PatientRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
@@ -13,62 +12,44 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.List;
 
 @Controller
-@AllArgsConstructor
 public class PatientController {
+    @Autowired
     private PatientRepository patientRepository;
-    @GetMapping(path = "/index")
-    public String patients(Model model,
-                           @RequestParam(name = "page", defaultValue = "0")int page,
-                           @RequestParam(name = "size", defaultValue = "5")int size,
-                           @RequestParam(name = "motCle", defaultValue = "")String motCle){
-        Page<Patient> pagePatients=patientRepository.findByNomContains(motCle,PageRequest.of(page,size));
-        model.addAttribute("ListPatients",pagePatients.getContent());
+    @GetMapping("/index")
+    public String index(Model model,
+                        @RequestParam(name = "page",defaultValue = "0") int page,
+                        @RequestParam(name = "size",defaultValue = "5") int size,
+                        @RequestParam(name = "keyword",defaultValue = "") String kw
+                        ){
+        Page<Patient> pagePatients = patientRepository.findByNomContains(kw, PageRequest.of(page,size));
+        model.addAttribute("listPatients",pagePatients.getContent());
         model.addAttribute("pages",new int[pagePatients.getTotalPages()]);
         model.addAttribute("currentPage",page);
-        model.addAttribute("motCle",motCle);
+        model.addAttribute("keyword",kw);
         return "patients";
     }
-    @GetMapping("/delete")
-    public String delete(Long id, String motCle, int page){
+    @GetMapping("/deletePatient")
+    public String deletePatient(@RequestParam(name = "id") Long id, String keyword, int page){
         patientRepository.deleteById(id);
-        return "redirect:/index?page="+page+"&motCle="+motCle;
+        return "redirect:/index?page="+page+"&keyword="+keyword;
     }
-
-    @GetMapping("/patients")
-    @ResponseBody
-    public List<Patient> listPatients(){
-        return patientRepository.findAll();
-    }
-    @GetMapping("/formulairePatient")
-    public String formulairePatient(Model model){
+    @GetMapping("/formPatient")
+    public String formPatient(Model model ){
         model.addAttribute("patient",new Patient());
-        return "formulairePatient";
+        return "formPatient";
     }
-
-    @PostMapping(path = "/save")
-    public String save(Model model, @Valid Patient patient, BindingResult bindingResult, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = " ") String motCle){
-        if (bindingResult.hasErrors())
-            return "formulairePatient";
+    @PostMapping("/savePatient")
+    public String savePatient(@Valid Patient patient, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) return "formPatient";
         patientRepository.save(patient);
-        return "redirect:/index?page"+page+"&motCle="+motCle  ;
-
+        return "formPatient";
     }
-    @GetMapping(path = "/editPatient")
-    public String editPatient(Model model, Long id, String motCle, int page){
-        Patient patient=patientRepository.findById(id).orElse(null);
-        if(patient==null)
-            throw  new RuntimeException("Patient introuvable");
+    @GetMapping("/editPatient")
+    public String editPatient(@RequestParam(name = "id") Long id, Model model){
+        Patient patient=patientRepository.findById(id).get();
         model.addAttribute("patient",patient);
-        model.addAttribute("page",page);
-        model.addAttribute("motCle",motCle);
         return "editPatient";
-
     }
-
-
 }
