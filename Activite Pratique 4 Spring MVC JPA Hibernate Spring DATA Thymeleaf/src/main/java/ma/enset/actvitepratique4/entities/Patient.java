@@ -9,11 +9,13 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
-@Data @AllArgsConstructor @NoArgsConstructor
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Patient {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
@@ -26,8 +28,8 @@ public class Patient {
 	private Date dateNaissance;
 
 	private boolean malade;
-
-	private int score;
+	@OneToMany(mappedBy = "patient",fetch =FetchType.LAZY )
+	private List<RendezVous> rendezVous;
 
 
 }
