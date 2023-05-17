@@ -20,11 +20,24 @@ public class ActivitePratique6MiseEnOeuvreDUnMicroServiceApplication {
     @Bean
     CommandLineRunner start(BankAccountRepository bankAccountRepository){
         return args -> {
-            bankAccountRepository.save(new BankAccount(null,new Date(),1000,"DHS", AccountType.CURRENT));
-            bankAccountRepository.save(new BankAccount(null,new Date(),2000,"DHS", AccountType.SAVING));
-            bankAccountRepository.save(new BankAccount(null,new Date(),3000,"DHS", AccountType.CURRENT));
-            bankAccountRepository.save(new BankAccount(null,new Date(),4000,"DHS", AccountType.SAVING));
-            bankAccountRepository.findAll().forEach(System.out::println);
+            for (int i = 0; i < 10; i++) {
+                bankAccountRepository.save(BankAccount.builder()
+                        .id("id"+i)
+                        .balance(1000.0)
+                        .creationDate(new Date())
+                        .currency("MAD")
+                        .type(AccountType.CURRENT)
+                        .build());
+            }
+            for (int i = 0; i < 10; i++) {
+                bankAccountRepository.save(BankAccount.builder()
+                        .id("id"+i)
+                        .balance(1000.0)
+                        .creationDate(new Date())
+                        .currency("MAD")
+                        .type(AccountType.SAVING)
+                        .build());
+            }
         };
     }
 

@@ -3,6 +3,7 @@ package ma.enset.gestioncomptesbancaires.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.enset.gestioncomptesbancaires.enums.AccountType;
@@ -14,12 +15,12 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class BankAccount {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
     private Date creationDate;
-    private double balance;
+    private Double  balance;
     private String currency;
 
     @Enumerated(EnumType.STRING)
